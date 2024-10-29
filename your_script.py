@@ -2,15 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-from googletrans import Translator
 
 def sanitize_filename(title):
     return re.sub(r'[<>:"/\\|?*]', '_', title)
 
 def fetch_html(url):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
-    }
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return BeautifulSoup(response.text, 'html.parser')
@@ -42,45 +39,41 @@ def scrape_article_content(link, title):
     if not soup:
         return
 
-    page_title = soup.find('h1').text if soup.find('h1') else "无标题"
+    page_title = soup.find('h1').text if soup.find('h1') else "No Title"
     print(f'Processing page title: {page_title}')
 
     main_content = soup.find('div', class_='ssrcss-1ki8hfp-StyledZone e1mcntqj3')
     content_data = {'title': page_title, 'link': link, 'content': []}
-
-    translator = Translator()
 
     if main_content:
         for element in main_content.find_all(['p', 'img']):
             if element.name == 'p':
                 paragraph_content = []
                 full_paragraph = element.get_text(strip=True)
-                translated_paragraph = translator.translate(full_paragraph, dest='zh-cn').text
-
                 bold_elements = element.find_all('b', class_='ssrcss-1xjjfut-BoldText e5tfeyi3')
-                last_index = 0
 
+                last_index = 0
                 for bold in bold_elements:
                     start = full_paragraph.find(bold.text)
                     if last_index < start:
-                        paragraph_content.append(translated_paragraph[last_index:start])
-                    paragraph_content.append({"text": translator.translate(bold.text.strip(), dest='zh-cn').text, "style": "bold"})
+                        paragraph_content.append(full_paragraph[last_index:start])
+                    paragraph_content.append({"text": bold.text.strip(), "style": "bold"})
                     last_index = start + len(bold.text)
 
-                if last_index < len(translated_paragraph):
-                    paragraph_content.append(translated_paragraph[last_index:])
+                if last_index < len(full_paragraph):
+                    paragraph_content.append(full_paragraph[last_index:])
                 
                 content_data['content'].append({"type": "paragraph", "content": paragraph_content})
             elif element.name == 'img':
                 img_url = element['src']
                 content_data['content'].append({"type": "image", "content": img_url})
     else:
-        print("未找到主要内容部分。")
+        print("Main content section not found.")
 
     filename = f"{sanitize_filename(title)}.json"
     with open(filename, 'w', encoding='utf-8') as json_file:
         json.dump(content_data, json_file, ensure_ascii=False, indent=4)
-    print(f"内容已保存到 {filename}")
+    print(f"Content saved to {filename}")
 
 # Base URL for search with page parameter
 base_url = "https://www.bbc.co.uk/search?q=profile+-+Timeline&d=NEWS_GNL&page="
