@@ -34,4 +34,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: scraped-data
-          path: '*.json'  # 更新路径，如果需要
+          path: '*.json'  # 确保这里是正确的路径
+
+      - name: Commit JSON files
+        run: |
+          git config --local user.email "your_email@example.com"  # 替换为你的邮箱
+          git config --local user.name "Your Name"  # 替换为你的名字
+          git add *.json
+          git commit -m "Add scraped JSON files" || echo "No changes to commit"
+          git push
