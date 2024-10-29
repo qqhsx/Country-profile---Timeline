@@ -38,8 +38,8 @@ jobs:
 
       - name: Commit JSON files
         run: |
-          git config --local user.email "your_email@example.com"  # 替换为你的邮箱
-          git config --local user.name "Your Name"  # 替换为你的名字
+          git config --local user.email "378600950@qq.com"  # 替换为你的邮箱
+          git config --local user.name "qqhsx"  # 替换为你的名字
           git add *.json
           git commit -m "Add scraped JSON files" || echo "No changes to commit"
           git push
