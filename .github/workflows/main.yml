@@ -3,8 +3,8 @@ name: Python Scraper
 on:
   push:
     branches:
-      - main  # 触发条件，可以根据需要修改
-  workflow_dispatch:  # 手动触发工作流
+      - main
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'  # 或者你需要的其他版本
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |
@@ -27,8 +27,11 @@ jobs:
       - name: Run the scraper
         run: python your_script.py  # 替换为你的 Python 脚本名
 
+      - name: List files
+        run: ls -la  # 列出当前目录下的文件
+
       - name: Upload results
-        uses: actions/upload-artifact@v3  # 使用最新版本
+        uses: actions/upload-artifact@v3
         with:
           name: scraped-data
-          path: '*.json'  # 上传生成的 JSON 文件
+          path: '*.json'  # 更新路径，如果需要
