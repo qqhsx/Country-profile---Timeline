@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
+import os
 
 def sanitize_filename(title):
     return re.sub(r'[<>:"/\\|?*]', '_', title)
@@ -34,7 +35,7 @@ def scrape_links_from_search(base_url, num_pages=1):
                 print("No search results container found.")
     return all_results
 
-def scrape_article_content(link, title):
+def scrape_article_content(link, title, output_directory):
     soup = fetch_html(link)
     if not soup:
         return
@@ -70,7 +71,9 @@ def scrape_article_content(link, title):
     else:
         print("Main content section not found.")
 
-    filename = f"{sanitize_filename(title)}.json"
+    # Ensure output directory exists
+    os.makedirs(output_directory, exist_ok=True)
+    filename = os.path.join(output_directory, f"{sanitize_filename(title)}.json")
     with open(filename, 'w', encoding='utf-8') as json_file:
         json.dump(content_data, json_file, ensure_ascii=False, indent=4)
     print(f"Content saved to {filename}")
@@ -78,10 +81,11 @@ def scrape_article_content(link, title):
 # Base URL for search with page parameter
 base_url = "https://www.bbc.co.uk/search?q=profile+-+Timeline&d=NEWS_GNL&page="
 num_pages = 1  # Adjust the number of pages as needed
+output_directory = 'output'  # Specify the output directory
 
 # Step 1: Fetch all article links
 all_results = scrape_links_from_search(base_url, num_pages)
 
 # Step 2: Fetch content for each article link
 for title, link in all_results:
-    scrape_article_content(link, title)
+    scrape_article_content(link, title, output_directory)
