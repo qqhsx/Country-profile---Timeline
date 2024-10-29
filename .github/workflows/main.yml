@@ -28,7 +28,7 @@ jobs:
         run: python your_script.py  # 替换为你的 Python 脚本名
 
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # 使用最新版本
         with:
           name: scraped-data
           path: '*.json'  # 上传生成的 JSON 文件
