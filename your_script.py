@@ -80,7 +80,7 @@ def scrape_article_content(link, title, output_directory):
 
 # Base URL for search with page parameter
 base_url = "https://www.bbc.co.uk/search?q=profile+-+Timeline&d=NEWS_GNL&page="
-num_pages = 3  # Adjust the number of pages as needed
+num_pages = 22  # Adjust the number of pages as needed
 output_directory = 'output'  # Specify the output directory
 
 # Step 1: Fetch all article links
